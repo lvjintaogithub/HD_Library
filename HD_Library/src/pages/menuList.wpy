@@ -1,0 +1,98 @@
+<template>
+  <view class="menu_lists">
+    <view class="more_type"><button bindtap="toClassifyPage">更多类型</button></view>
+    <view class="menu_list">
+      <repeat for="{{menuImageList}}" key="{{index}}" item="item" index="index">
+        <view class="menu_item" bindtap="previewImage('{{item.picture}}')">
+          <image src="{{item.picture[0]}}"/>
+        </view>
+      </repeat>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import api from '../api/index'
+  export default class MenuList extends wepy.page {
+    config = {
+      navigationBarTitleText: '高清头像',
+      onReachBottomDistance: 50
+    }
+    data = {
+      menuId: '',
+      menuName: '',
+      menuImageList: [],
+      page: 1
+    }
+    toClassifyPage() {
+      wepy.switchTab({
+        url: '../pages/classify'
+      })
+    }
+    requestMenuList(page) {
+      api.photoList({
+        id: this.menuId,
+        page: page
+      }).then((res) => {
+        // console.log('res...', res.data)
+        this.menuImageList = this.menuImageList.concat(res.data)
+        // console.log('this.menuImageList...', this.menuImageList)
+        this.$apply()
+      })
+    }
+    previewImage(pic) {
+      wepy.previewImage({
+        current: pic, // 当前显示图片的http链接
+        urls: pic.currentTarget.dataset.wpypreviewimageA// 需要预览的图片http链接列表
+      })
+    }
+    onLoad(params) {
+      // console.log('params...', params.menuId)
+      this.menuId = params.menuId
+      this.menuName = params.menuName
+      wepy.setNavigationBarTitle({
+        title: this.menuName
+      })
+      // console.log('this.menuId...', this.menuId)
+      this.requestMenuList(this.page)
+    }
+    onReachBottom() {
+      this.requestMenuList(this.page++)
+    }
+  }
+</script>
+<style lang="less" scoped>
+  .menu_lists{
+    width: 100%;
+    height: 100%;
+  }
+  .more_type{
+    button{
+      height: 80rpx;
+      line-height: 80rpx;
+      background-color: #fff;
+      font-size: 30rpx;
+    }
+  }
+  .menu_list{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 0 10rpx;
+    box-sizing: border-box;
+    background-color: #eee;
+    .menu_item{
+      width: 28.6%;
+      height: 200rpx;
+      background-color: #fff;
+      padding: 12rpx;
+      margin-bottom: 14rpx;
+      image{
+        width:100%;
+        height: 100%;
+      }
+    }
+  }
+</style>
