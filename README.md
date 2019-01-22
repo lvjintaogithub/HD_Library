@@ -1,2 +1,2 @@
 # weixin
-there are some project and demo about weixin
+this is a example of weixin miniapp
